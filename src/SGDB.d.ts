@@ -5,10 +5,13 @@ export default class SGDB {
   getGameById(id: number): Promise<any>;
   getGameBySteamAppId(id: number): Promise<any>;
   getGrids(options: any): Promise<any>;
+  getIcons(options: any): Promise<any>;
   getHeroes(options: any): Promise<any>;
   getLogos(options: any): Promise<any>;
   getGridsById(id: number, styles: any, dimensions: any): Promise<any>;
   getGridsBySteamAppId(id: number, styles: any, dimensions: any): Promise<any>;
+  getIconsById(id: number, styles: any, dimensions: any): Promise<any>;
+  getIconBySteamAppId(id: number, styles: any, dimensions: any): Promise<any>;
   voteGrid(options: any): Promise<any>;
   upvoteGrid(id: number): Promise<any>;
   downvoteGrid(id: number): Promise<any>;

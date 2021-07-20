@@ -42,7 +42,7 @@ class SGDB {
     _handleRequest(method, url, params, formData = null) {
         let options = { uri: `${this.baseURL}${url}`, headers: this.headers, method: method, qs: params, simple: false, json: true, resolveWithFullResponse: true };
         if (formData) {
-            options = Object.assign({},options,{formData: formData});
+            options = Object.assign({}, options, { formData: formData });
         }
 
         return new Promise((resolve, reject) => {
@@ -88,7 +88,7 @@ class SGDB {
      * @return {Promise<Object>} JSON game response
      */
     getGameById(id) {
-        return this.getGame({type: 'id', id: id});
+        return this.getGame({ type: 'id', id: id });
     }
 
     /**
@@ -96,7 +96,7 @@ class SGDB {
      * @return {Promise<Object>} JSON game response
      */
     getGameBySteamAppId(id) {
-        return this.getGame({type: 'steam', id: id});
+        return this.getGame({ type: 'steam', id: id });
     }
 
     /**
@@ -154,18 +154,66 @@ class SGDB {
                 });
         });
     }
+
+    /**
+     * @param {Number} id Game ID on SteamGridDB
+     * @param {(Array|Undefined)} styles Array of icon styles.
+     * @param {(Array|Undefined)} dimensions Array of icon dimensions.
+     * @return {Promise<Object>} JSON icon response
+     */
+    getIconsById(id, styles, dimensions) {
+        return this.getIcons({ type: 'game', id: id, styles: styles, dimensions: dimensions });
+    }
+
+    /**
+     * @param {Number} id Steam App ID
+     * @param {(Array|Undefined)} styles Array of icon styles.
+     * @param {(Array|Undefined)} dimensions Array of icon dimensions.
+     * @return {Promise<Object>} JSON icon response
+     */
+    getIconsBySteamAppId(id, styles, dimensions) {
+        return this.getIcons({ type: 'steam', id: id, styles: styles, dimensions: dimensions });
+    }
+
+    /**
+     * @param {Object} options
+     * @param {String} options.type ID Type.
+     * @param {Number} options.id Game ID. Could be Steam App ID or game ID
+     * @param {(Array|Undefined)} options.styles Array of icon styles.
+     * @param {(Array|Undefined)} options.dimensions Array of icon dimensions.
+     * @return {Promise<Object>} JSON icon response
+     */
+    getIcons(options) {
+        let params = {};
+        if (typeof options.styles !== 'undefined') {
+            params.styles = options.styles.join(',');
+        }
+        if (typeof options.dimensions !== 'undefined') {
+            params.dimensions = options.dimensions.join(',');
+        }
+        return new Promise((resolve, reject) => {
+            this._handleRequest('get', `/icons/${options.type}/${options.id}`, params)
+                .then((res) => {
+                    if (res.success) {
+                        resolve(res.data);
+                    }
+                }).catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+
     getLogos(options) {
-      let params = {};
-      return new Promise((resolve, reject)=>{
-        this._handleRequest('get',`/logos/${options.type}/${options.id}`)
-          .then((res) => {
-            if (res.success) {
-              resolve(res.data);
-            }
-          }).catch((err)=>{
-            reject(err);
-          });
-      });
+        return new Promise((resolve, reject) => {
+            this._handleRequest('get', `/logos/${options.type}/${options.id}`)
+                .then((res) => {
+                    if (res.success) {
+                        resolve(res.data);
+                    }
+                }).catch((err) => {
+                    reject(err);
+                });
+        });
     }
 
     /**
@@ -175,7 +223,7 @@ class SGDB {
      * @return {Promise<Object>} JSON grid response
      */
     getGridsById(id, styles, dimensions) {
-        return this.getGrids({type: 'game', id: id, styles: styles, dimensions: dimensions});
+        return this.getGrids({ type: 'game', id: id, styles: styles, dimensions: dimensions });
     }
 
     /**
@@ -185,7 +233,7 @@ class SGDB {
      * @return {Promise<Object>} JSON grid response
      */
     getGridsBySteamAppId(id, styles, dimensions) {
-        return this.getGrids({type: 'steam', id: id, styles: styles, dimensions: dimensions});
+        return this.getGrids({ type: 'steam', id: id, styles: styles, dimensions: dimensions });
     }
 
     /**
@@ -195,7 +243,7 @@ class SGDB {
      * @return {Promise<Boolean>}
      */
     voteGrid(options) {
-        if (!['up','down'].includes(options.direction)) {
+        if (!['up', 'down'].includes(options.direction)) {
             return new TypeError('Invalid direction paramater. Can only vote "up" or "down".');
         }
 
@@ -216,7 +264,7 @@ class SGDB {
      * @return {Promise<Boolean>}
      */
     upvoteGrid(id) {
-        return this.voteGrid({direction: 'up', id: id});
+        return this.voteGrid({ direction: 'up', id: id });
     }
 
     /**
@@ -224,7 +272,7 @@ class SGDB {
      * @return {Promise<Boolean>}
      */
     downvoteGrid(id) {
-        return this.voteGrid({direction: 'down', id: id});
+        return this.voteGrid({ direction: 'down', id: id });
     }
 
     /**
